@@ -1,0 +1,31 @@
+REGION="northamerica-northeast2"
+PROJECT_ID="sofe4630u-449800"
+BUCKET=${PROJECT_ID}-bucket
+python dataflow_pipeline.py \
+  --runner=DataflowRunner \
+  --project=$PROJECT_ID \
+  --region=$REGION \
+  --job_name=pedestrian-job \
+  --temp_location=gs://$BUCKET/temp/ \
+  --staging_location=gs://$BUCKET/staging/ \
+  --input_pattern="gs://$BUCKET/Dataset_Occluded_Pedestrian/*.png" \
+  --pubsub_topic="projects/$PROJECT/topics/pedestrian-output" \
+  --experiments=use_runner_v2 \
+  --sdk_container_image=gcr.io/$PROJECT/dataflow-pedestrian:latest
+
+PROJECT_ID=sofe4630u-449800
+python publisher.py \
+    --project $PROJECT_ID \
+    --topic design3 \
+    --folder /Users/jeremytubongbanua/GitHub/sofe4630u-lab3/design-3/Dataset_Occluded_Pedestrian
+
+PROJECT_ID=sofe4630u-449800
+python streaming_pipeline.py \
+    --input_topic projects/$PROJECT_ID/topics/design3 \
+    --output_topic projects/$PROJECT_ID/topics/design3-output
+
+OUTPUT_SUBSCRIPTION_ID=design3-output-sub
+PROJECT_ID=sofe4630u-449800
+python subscriber1.py \
+    --project $PROJECT_ID \
+    --subscription $OUTPUT_SUBSCRIPTION_ID
