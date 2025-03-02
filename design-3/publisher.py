@@ -20,7 +20,6 @@ def publish(project_id, topic_id, folder):
     publisher = pubsub_v1.PublisherClient()
     topic_path = publisher.topic_path(project_id, topic_id)
     
-    # Get all PNG files and sort them
     png_files = [f for f in os.listdir(folder) if f.lower().endswith(".png")]
     png_files.sort(key=natural_sort_key)
     

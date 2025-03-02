@@ -21,7 +21,6 @@ def play_image_sequence(folder_path, fps=5, loop=False):
         fps: Frames per second for playback
         loop: Whether to loop the playback
     """
-    # Get all PNG files and sort them
     image_files = glob.glob(os.path.join(folder_path, "*.png"))
     if not image_files:
         print(f"No PNG images found in {folder_path}")
@@ -30,20 +29,16 @@ def play_image_sequence(folder_path, fps=5, loop=False):
     image_files.sort(key=natural_sort_key)
     print(f"Found {len(image_files)} images to play")
     
-    # Calculate frame delay in milliseconds
     frame_delay = int(1000 / fps)
     
-    # Create a window
     cv2.namedWindow("Image Sequence", cv2.WINDOW_NORMAL)
     
-    # Read the first image to get dimensions
     first_image = cv2.imread(image_files[0])
     if first_image is None:
         print(f"Error: Could not read {image_files[0]}")
         return
         
     height, width = first_image.shape[:2]
-    # Resize the window if image is too large
     if width > 1200 or height > 800:
         cv2.resizeWindow("Image Sequence", min(width, 1200), min(height, 800))
     
@@ -56,34 +51,28 @@ def play_image_sequence(folder_path, fps=5, loop=False):
     
     while running:
         if not paused:
-            # Read current image
             current_file = image_files[index]
             image = cv2.imread(current_file)
             
             if image is not None:
-                # Show image with filename
                 filename = os.path.basename(current_file)
                 cv2.putText(image, filename, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 
                             1, (0, 255, 0), 2)
                 cv2.imshow("Image Sequence", image)
                 
-                # Move to next image
                 index = (index + 1) % len(image_files)
                 
-                # If reached the end and not looping, stop
                 if index == 0 and not loop:
                     print("End of sequence reached")
                     if not loop:
-                        # Pause at the end if not looping
                         paused = True
             else:
                 print(f"Error reading {current_file}")
                 index = (index + 1) % len(image_files)
         
-        # Check for key presses (wait for frame_delay ms)
         key = cv2.waitKey(frame_delay)
         if key != -1:
-            key = key & 0xFF  # Extract the lower byte
+            key = key & 0xFF
             
             if key == ord('q'):
                 running = False

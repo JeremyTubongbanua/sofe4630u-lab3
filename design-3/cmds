@@ -1,3 +1,9 @@
+PROJECT_ID="sofe4630u-449800"
+BUCKET=${PROJECT_ID}-bucket
+./run_pipeline.sh --project $PROJECT_ID --bucket $BUCKET
+
+--
+
 REGION="northamerica-northeast2"
 PROJECT_ID="sofe4630u-449800"
 BUCKET=${PROJECT_ID}-bucket
@@ -12,6 +18,20 @@ python dataflow_pipeline.py \
   --pubsub_topic="projects/$PROJECT/topics/pedestrian-output" \
   --experiments=use_runner_v2 \
   --sdk_container_image=gcr.io/$PROJECT/dataflow-pedestrian:latest
+
+REGION="northamerica-northeast2"
+PROJECT_ID="sofe4630u-449800"
+BUCKET=${PROJECT_ID}-bucket
+python3 pedestrian_detection_dataflow.py \
+    --project=$PROJECT_ID \
+    --region=$REGION \
+    --job_name=pedestrian-detection-job \
+    --input_topic=projects/$PROJECT_ID/topics/design3-sub \
+    --output_topic=projects/$PROJECT_ID/topics/design3-output \
+    --temp_location=gs://$BUCKET/temp/ \
+    --staging_location=gs://$BUCKET/staging/ \
+    --requirements_file=requirements.txt \
+    --runner=DataflowRunner
 
 PROJECT_ID=sofe4630u-449800
 python publisher.py \

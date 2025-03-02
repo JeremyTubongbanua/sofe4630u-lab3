@@ -80,7 +80,6 @@ class ProcessImageDoFn(beam.DoFn):
         bboxes = self.detect_pedestrians(image)
         depth_map = self.estimate_depth(image)
         
-        # Include file_name in the result
         result = {
             "file_name": file_name,
             "pedestrians": []
